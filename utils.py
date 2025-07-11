@@ -5,7 +5,7 @@ def to_lowercase(dataframe):
     return dataframe.apply(lambda x: x.str.lower() if x.dtype == "object" else x)
 
 def mostrar_sidebar_con_logo():
-    st.sidebar.image('dashboard/image/quai_analytics_logo.png')
+    st.sidebar.image('image/quai_analytics_logo.png')
     st.sidebar.markdown("---")  # Separador visual
 
 def mostrar_sidebar_footer():
