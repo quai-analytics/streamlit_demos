@@ -1,0 +1,51 @@
+# Archivos y carpetas de Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Entornos virtuales
+.env/
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# Archivos de configuración ocultos
+*.DS_Store
+*.idea/
+*.vscode/
+*.mypy_cache/
+*.pytest_cache/
+*.pkl
+*.bak
+*.swp
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/config.toml  # Si contiene información sensible
+
+# Archivos generados por Streamlit o exploraciones
+*.csv
+*.json
+*.xlsx
+*.db
+*.sqlite3
+
+# Jupyter (si usas notebooks en el proyecto)
+.ipynb_checkpoints/
+
+# Resultados temporales
+output/
+results/
+tmp/
+temp/
+*.tmp
+
+# Git
+.gitignore
