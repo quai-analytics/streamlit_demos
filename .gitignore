@@ -26,17 +26,11 @@ env/
 *.vscode/
 *.mypy_cache/
 *.pytest_cache/
-*.pkl
 *.bak
 *.swp
 
-# Streamlit
-.streamlit/secrets.toml
-.streamlit/config.toml  # Si contiene información sensible
-
 # Archivos generados por Streamlit o exploraciones
 *.csv
-*.json
 *.xlsx
 *.db
 *.sqlite3
