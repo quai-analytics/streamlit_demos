@@ -8,6 +8,10 @@ dist/
 build/
 *.log
 
+# Archivos de key
+key_1
+*.pub
+
 # Entornos virtuales
 .env/
 .venv/
