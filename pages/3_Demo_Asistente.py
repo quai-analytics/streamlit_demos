@@ -79,6 +79,18 @@ with col1:
                 st.markdown(reply)
                 st.session_state.chat_history_schedule.append({"role": "assistant", "content": reply})
 
+st.markdown(
+    """
+    <style>
+    .calendar-container iframe {
+        width: 100%;
+        height: 80vh; /* scale with viewport */
+        border: 0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 with col2:
     st.subheader("📅 Google Calendar")
