@@ -84,7 +84,7 @@ with col2:
     st.subheader("📅 Google Calendar")
     st.markdown(
         """
-        <iframe src="https://calendar.google.com/calendar/embed?src=ricardo.alvarez%40quaianalytics.com&ctz=America%2FPanama" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        <iframe src="https://calendar.google.com/calendar/embed?src=ricardo.alvarez%40quaianalytics.com&ctz=America%2FPanamaa" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
         """,
         unsafe_allow_html=True,
     )
