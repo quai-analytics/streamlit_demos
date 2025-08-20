@@ -8,8 +8,8 @@ apply_sidebar_style()
 mostrar_sidebar_con_logo()
 
 
-#WEBHOOK_URL = st.secrets["n8n"]["webhook_url"]
-WEBHOOK_URL  =  "https://n8n.quaianalytics.com/webhook/7f7ad1c2-8711-43dc-be2b-4bf710d0daa2/chat"
+WEBHOOK_URL = st.secrets["n8n"]["webhook_assistant_url"]
+#WEBHOOK_URL  =  "https://n8n.quaianalytics.com/webhook/7f7ad1c2-8711-43dc-be2b-4bf710d0daa2/chat"
 
 # Darle un session ID de la corrida actual
 session_id = st.session_state.get("session_id")
