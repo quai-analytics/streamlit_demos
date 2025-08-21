@@ -18,7 +18,7 @@ sys.path.append(os.path.dirname(__file__))
 from utils import *
 
 
-with open('model_config.json', 'r', encoding='utf-8') as archivo:
+with open('model_config_v2.json', 'r', encoding='utf-8') as archivo:
     # 3. Usar json.load() para convertir el contenido del archivo en un diccionario de Python
     datos = json.load(archivo)
 
@@ -46,12 +46,13 @@ mostrar_sidebar_con_logo()
 ####################
 # Borrar al corregir
 import __main__
+
 __main__.to_lowercase = to_lowercase  # 👈 Hack temporal
 ####################
 ####################
 ####################
 
-model_pipeline = joblib.load('real_estate_model_pipeline.pkl')
+model_pipeline = joblib.load('real_estate_model_pipeline_v2.pkl')
 
 st.subheader("Detalles de la Propiedad")
 
@@ -75,6 +76,12 @@ with col1:
         "Habitaciones (bedroom)",
         min_value=0, max_value=10, value=2, step=1,
         help="Número de habitaciones."
+    )
+
+    bathroom_input = st.number_input(
+        "Baños (bathrooms)",
+        min_value=0, max_value=10, value=2, step=1,
+        help="Número de baños."
     )
 
     # Característica numérica: 'size'
@@ -115,7 +122,7 @@ with col2:
 with col3:
     # Características categóricas adicionales
     
-    den_input = st.radio("¿Tiene den/estudio? (den)", ('sí', 'no'), horizontal=True)
+    pool_input = st.radio("¿Tiene piscina?", ('sí', 'no'), horizontal=True)
     commercial_input = st.radio("¿Es de uso comercial? (commercial)", ('sí', 'no'), horizontal=True)
 
 
@@ -126,19 +133,20 @@ with col3:
 if st.button(button_label):
     # Creamos un diccionario para asegurar que los nombres de las columnas son correctos.
     input_data = {
-        'photos': [photos_input],
+        'has_photos': [photos_input],
         'location': [location_input],
         'building': [building_input],
-        'den': [den_input],
-        'commercial': [commercial_input],
-        'bedroom': [bedroom_input],
-        'size': [size_input],
+        'bathrooms': [bathroom_input],
+        'has_pool': [pool_input],
+        #'commercial': [commercial_input],
+        'bedrooms': [bedroom_input],
+        'size_m2': [size_input],
         'parking_spaces': [parking_spaces_input]
     }
     input_df = pd.DataFrame(input_data)
 
     # Es buena práctica aplicar la misma transformación de minúsculas que en el entrenamiento.
-    input_df = to_lowercase(input_df)
+    #input_df = to_lowercase(input_df)
 
     # Realizar la predicción
     predicted_price = model_pipeline.predict(input_df)[0]
