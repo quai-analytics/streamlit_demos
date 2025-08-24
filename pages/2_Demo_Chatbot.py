@@ -8,7 +8,7 @@ apply_sidebar_style()
 mostrar_sidebar_con_logo()
 
 
-if "ST_ENV" in os.environ and os.environ["ST_ENV"] == "CLOUD":
+if os.environ['USER'] == "appuser":
     # En Streamlit Community Cloud
     WEBHOOK_URL = st.secrets["n8n"]["webhook_private_url"]
 else:
