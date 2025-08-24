@@ -20,6 +20,9 @@ ENV/
 env/
 *.env
 
+# Secrets
+secrets/
+
 # Archivos de configuración ocultos
 *.DS_Store
 *.idea/

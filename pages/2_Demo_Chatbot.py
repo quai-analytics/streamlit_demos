@@ -1,13 +1,23 @@
 import streamlit as st 
 import requests
 from utils import *
+import os
+import json
 
 apply_sidebar_style()
 mostrar_sidebar_con_logo()
 
-WEBHOOK_URL = st.secrets["n8n"]["webhook_private_url"]
 
-#WEBHOOK_URL  = "https://n8n.quaianalytics.com/webhook/3f1efc51-ca56-4956-8131-076326ee6cc6/chat"
+if "ST_ENV" in os.environ and os.environ["ST_ENV"] == "CLOUD":
+    # En Streamlit Community Cloud
+    WEBHOOK_URL = st.secrets["n8n"]["webhook_private_url"]
+else:
+    json_path = os.path.join(os.path.dirname(__file__), "..", "secrets", "n8n_urls.json")
+    json_path = os.path.abspath(json_path)
+    with open(json_path) as f:
+        secrets = json.load(f)
+    WEBHOOK_URL = secrets["chatbot_properties"]
+    
 
 # Darle un session ID de la corrida actual
 session_id = st.session_state.get("session_id")

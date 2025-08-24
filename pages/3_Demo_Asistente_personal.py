@@ -1,15 +1,26 @@
 import streamlit as st 
 import requests
 from utils import *
+import json
 import uuid  # Importar la librería uuid
-
+import os
 
 apply_sidebar_style()
 mostrar_sidebar_con_logo()
 
+if "ST_ENV" in os.environ and os.environ["ST_ENV"] == "CLOUD":
+    # En Streamlit Community Cloud
+    WEBHOOK_URL = st.secrets["n8n"]["webhook_assistant_url"]
+    GOOGLE_CALENDAR_IFRAME_URL = st.secrets["n8n"]["google_calendar_frame"]
+else:
+    json_path = os.path.join(os.path.dirname(__file__), "..", "secrets", "n8n_urls.json")
+    json_path = os.path.abspath(json_path)
+    with open(json_path) as f:
+        secrets = json.load(f)
+    
+    WEBHOOK_URL = secrets["personal_assistant"]
+    GOOGLE_CALENDAR_IFRAME_URL = secrets["google_calendar_frame"]
 
-WEBHOOK_URL = st.secrets["n8n"]["webhook_assistant_url"]
-#WEBHOOK_URL  =  "https://n8n.quaianalytics.com/webhook/7f7ad1c2-8711-43dc-be2b-4bf710d0daa2/chat"
 
 # Darle un session ID de la corrida actual
 session_id = st.session_state.get("session_id")
@@ -106,7 +117,7 @@ with col2:
     iframe_key = st.session_state.get("iframe_key", "default_key")
 
     # URL del iframe, ahora con el parámetro de recarga
-    iframe_url = f"https://calendar.google.com/calendar/embed?src=alvarezycuadraconsulting%40gmail.com&ctz=America%2FPanama&reload_key={iframe_key}"
+    iframe_url = GOOGLE_CALENDAR_IFRAME_URL + f"={iframe_key}"
 
 
     # Mostrar el iframe con el URL dinámico y la altura ajustada
