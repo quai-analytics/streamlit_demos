@@ -8,6 +8,10 @@ import os
 apply_sidebar_style()
 mostrar_sidebar_con_logo()
 
+print(os.environ)
+print("ST_ENV" in os.environ)
+print(os.environ["ST_ENV"])
+
 if "ST_ENV" in os.environ and os.environ["ST_ENV"] == "CLOUD":
     # En Streamlit Community Cloud
     WEBHOOK_URL = st.secrets["n8n"]["webhook_assistant_url"]
