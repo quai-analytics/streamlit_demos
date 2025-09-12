@@ -1,2 +1,3 @@
 thefuzz
 scikit-learn
+plotly
