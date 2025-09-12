@@ -25,7 +25,7 @@ if os.environ['USER'] == "appuser":
     # En Streamlit Community Cloud
     Credentials = st.secrets["google_cloud"]["gcp_service_account"]
     credentials = service_account.Credentials.from_service_account_info(
-        st.secrets["google_cloud"]["gcp_service_account"]
+        json.loads(Credentials)
     )
 else:
     service_account_path = os.path.join(
