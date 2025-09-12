@@ -37,7 +37,7 @@ st.set_page_config(
 
 apply_sidebar_style()
 mostrar_sidebar_con_logo()
-
+mostrar_sidebar_footer()
 
 
 
@@ -54,15 +54,14 @@ __main__.to_lowercase = to_lowercase  # 👈 Hack temporal
 
 model_pipeline = joblib.load('real_estate_model_pipeline_v2.pkl')
 
+st.markdown("""
+            > ℹ️ **Prueba de concepto que combina modelos de ML y data del mercado local para predecir el valor de tu propiedad en Panamá. Ajusta características y obtén al instante un precio estimado junto a su intervalo de confianza al 95%.**
+            """)
+
 st.subheader("Detalles de la Propiedad")
 
-# Texto institucional compacto
-st.sidebar.markdown("""
-    <div style='font-size: 0.85em; line-height: 1.3em; margin-top: -20px; margin-bottom: 10px; color: white;'>
-        <strong>Estimación Inteligente de Precios Inmobiliarios</strong><br>
-        Prueba de concepto que combina modelos de ML y data del mercado local para predecir el valor de tu propiedad en Panamá. Ajusta características y obtén al instante un precio estimado junto a su intervalo de confianza al 95%.<br><br>
-    </div>
-""", unsafe_allow_html=True)
+
+
 
 
 transaction_type_input = 'Venta'
@@ -172,5 +171,3 @@ if st.button(button_label):
     col1.metric("📈 Estimado", f"${predicted_price:,.2f}")
     col2.metric("⬇️ Límite Inferior", f"${lower_bound:,.2f}")
     col3.metric("⬆️ Límite Superior", f"${upper_bound:,.2f}")
-
-mostrar_sidebar_footer()

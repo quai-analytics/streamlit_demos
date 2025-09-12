@@ -39,14 +39,13 @@ st.set_page_config(
 st.set_page_config(page_title="Asistente Personal", page_icon="🤖", layout="wide")
 st.title("🤖 Chat con Asistente para Citas")
 
-# Texto institucional compacto
-st.sidebar.markdown("""
-    <strong>Asistente para Agendar Citas</strong><br>
-    Prueba de asistente inteligente se conecta con Google Calendar para ayudarte a gestionar tus citas con facilidad. Conversa con él para crear, agendar, modificar o eliminar eventos y citas de tu calendario, todo usando lenguaje natural.
-    </div>
-        
-""", unsafe_allow_html=True)
 
+st.markdown("""
+            > ℹ️ **Prueba de asistente inteligente se conecta con Google Calendar para ayudarte a gestionar tus citas con facilidad. Conversa con él para crear, agendar, modificar o eliminar eventos y citas de tu calendario, todo usando lenguaje natural.**
+            """)
+
+
+st.divider()
 mostrar_sidebar_footer()
 
 st.subheader("💬 Asistente Personal")
