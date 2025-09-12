@@ -37,7 +37,6 @@ def mostrar_sidebar_footer():
 
         <div class="sidebar-spacer"></div>
         <div class="sidebar-footer">
-            <em>Junio 2025</em><br>
             <small>© 2025 QuAI Analytics</small>
         </div>
     """, unsafe_allow_html=True)

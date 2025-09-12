@@ -37,14 +37,6 @@ st.set_page_config(
 st.set_page_config(page_title="Chatbot Inmobiliario", page_icon="🤖", layout="wide")
 st.title("🤖 Chat con Asistente Inmobiliario")
 
-# Texto institucional compacto
-st.sidebar.markdown("""
-    <div style='font-size: 0.85em; line-height: 1.3em; margin-top: -20px; margin-bottom: 10px; color: white;'>
-        <strong>Asistente IA Virtual Inmobiliario Inteligente</strong><br>
-        Prueba de concepto que utiliza inteligencia artificial para responder consultas sobre bienes raíces en Panamá. Conversa con nuestro chatbot y recibe asesoría inmediata sobre precios, zonas, procesos de compra o alquiler y más, todo en lenguaje natural.
-        </div>
-        
-""", unsafe_allow_html=True)
 
 mostrar_sidebar_footer()
 

@@ -24,6 +24,15 @@ st.set_page_config(
 )
 
 st.title("📉 Panel de Predicción de fidelización de Clientes")
+
+st.markdown("""
+            > ℹ️ **Esta aplicación inteligente evalúa la probabilidad de que un cliente se dé de baja. 
+            Al ingresar datos clave como el tiempo que lleva con nosotros, cargos mensuales, tipo de contrato, 
+            quejas y pagos atrasados, te ayudará a tomar decisiones estratégicas. Analiza los resultados para 
+            contactar a los clientes en riesgo o fortalecer la relación con los más fieles.**
+            """)
+
+st.divider()
 st.write("Ingrese la información del cliente para analizar si tiene alta probabilidad de darse de baja.")
 
 # -----------------------------
@@ -67,3 +76,5 @@ if st.button("Analizar cliente"):
 
     st.write("### Detalles de probabilidad")
     st.progress(prob)
+
+mostrar_sidebar_footer()
