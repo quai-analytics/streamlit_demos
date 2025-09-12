@@ -23,7 +23,7 @@ BUCKET_NAME = "data_quai_dev" # Nombre del bucket
 
 if os.environ['USER'] == "appuser":
     # En Streamlit Community Cloud
-    Credentials = st.secrets["gcp_service_account"]
+    Credentials = st.secrets["google_cloud"]["gcp_service_account"]
     print(Credentials)
 else:
     service_account_path = os.path.join(
