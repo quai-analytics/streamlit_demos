@@ -2,3 +2,4 @@ thefuzz
 scikit-learn
 plotly
 google-cloud-storage
+websockets

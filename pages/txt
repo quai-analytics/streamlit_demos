@@ -1,4 +1,0 @@
-[n8n]
-webhook_private_url = "https://n8n.quaianalytics.com/webhook/3f1efc51-ca56-4956-8131-076326ee6cc6/chat"
-
-webhook_assistant_url = "https://n8n.quaianalytics.com/webhook/7f7ad1c2-8711-43dc-be2b-4bf710d0daa2/chat"
