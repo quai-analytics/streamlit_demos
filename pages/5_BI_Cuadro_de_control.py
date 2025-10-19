@@ -107,7 +107,7 @@ with filter_2:
         )
 
 # Aplicar filtros
-df_filtered = df[(df["Year"] == anio_sel) & (df["Category"].isin(categorias_sel))]
+df_filtered = df[(df["Year"] == anio_sel) & (df["Category"].isin(categorias_sel))].copy()
 
 # Calculando el margen
 df_filtered["Margin"] = (df_filtered["Price"] - df_filtered["Cost"])/df_filtered["Price"] * 100
