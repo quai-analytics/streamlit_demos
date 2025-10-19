@@ -6,7 +6,16 @@ from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
+import os
+import sys
 import plotly.express as px
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils import *
+
+apply_sidebar_style()
+mostrar_sidebar_con_logo()
 
 # Título de la aplicación
 st.title('Prueba de Concepto de Clustering de Clientes 🇵🇦')
@@ -79,12 +88,16 @@ if st.checkbox('Mostrar gráfico del método del codo'):
     ax.set_title('Método del Codo')
     ax.set_xlabel('Número de Clusters (K)')
     ax.set_ylabel('Inercia')
-    elbow_chart_placeholder.pyplot(fig)
+    elbow_chart_placeholder.pyplot(fig, use_container_width=True)
+    plt.close(fig) # Liberar memoria
+else:
+    elbow_chart_placeholder.empty() # Limpiar el placeholder si la casilla no está marcada
     
 
 # Aplicar K-Means con el K seleccionado por el usuario
 st.subheader(f'3. Clustering con K-Means (K = {num_clusters})')
 kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
+kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init='auto')
 df_rfm['Cluster'] = kmeans.fit_predict(df_rfm_escalado)
 
 st.write(f"Los clientes han sido agrupados en {num_clusters} segmentos distintos.")
