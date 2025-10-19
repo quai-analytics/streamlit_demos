@@ -20,7 +20,11 @@ ENV/
 env/
 *.env
 
+# Carpetas
 tests/
+.devcontainer/
+ml_development/
+ml_examples/
 
 # Secrets
 secrets/
