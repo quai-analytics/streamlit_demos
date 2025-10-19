@@ -20,6 +20,8 @@ ENV/
 env/
 *.env
 
+tests/
+
 # Secrets
 secrets/
 
