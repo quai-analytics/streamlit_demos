@@ -62,11 +62,15 @@ df_rfm_escalado = pd.DataFrame(df_rfm_escalado, columns=['Recencia', 'Frecuencia
 # Método del codo para el número de clusters
 st.subheader('2. Método del Codo para Encontrar K')
 st.write("El método del codo ayuda a encontrar el número óptimo de clusters. Buscamos el punto de inflexión en el gráfico.")
-if st.checkbox('Mostrar gráfico del codo'):
+
+# Crear un placeholder para el gráfico del codo
+elbow_chart_placeholder = st.empty()
+
+if st.checkbox('Mostrar gráfico del método del codo'):
     inercia = []
     rango_clusters = range(1, 11)
     for k in rango_clusters:
-        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init='auto') # Usar 'auto' para evitar FutureWarning
         kmeans.fit(df_rfm_escalado)
         inercia.append(kmeans.inertia_)
     
@@ -75,7 +79,7 @@ if st.checkbox('Mostrar gráfico del codo'):
     ax.set_title('Método del Codo')
     ax.set_xlabel('Número de Clusters (K)')
     ax.set_ylabel('Inercia')
-    st.pyplot(fig)
+    elbow_chart_placeholder.pyplot(fig)
     
 
 # Aplicar K-Means con el K seleccionado por el usuario

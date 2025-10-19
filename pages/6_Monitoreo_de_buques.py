@@ -1,271 +1,137 @@
 import asyncio
 import os
+import sys
 import websockets
 import json
-<<<<<<< HEAD
-from datetime import datetime
-=======
 from datetime import datetime, timedelta
->>>>>>> ais_stream_test
 import streamlit as st
 import pandas as pd
-import threading
-import time
-<<<<<<< HEAD
-=======
-import queue
 import numpy as np
->>>>>>> ais_stream_test
 import traceback
 
 from utils import *
 
-st.set_page_config(page_title="Monitoreo de Buques en Panamá", layout="wide")
-
-st.title("🛳️ Monitoreo de Buques en Panamá")
-
-CSV_FILE = "ships_positions.csv"
-
 apply_sidebar_style()
 mostrar_sidebar_con_logo()
+mostrar_sidebar_footer()
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Si el archivo existe, lo sobreescribimos con un CSV vacío
-<<<<<<< HEAD
-DF_COLUMNS = ["name", "mmsi", "latitude", "longitude", "speed", "timestamp"]
-=======
+st.set_page_config(page_title="Monitoreo de Buques en Tiempo Real", layout="wide")
+
+st.title("🛳️ Monitoreo de Buques en Tiempo Real")
+
 DF_COLUMNS = ["name", "mmsi", "latitude", "longitude", "speed", "timestamp", "ship_type", "destination", "eta"]
->>>>>>> ais_stream_test
 
 # Leyendo los secrets:
 if os.environ['USER'] == "appuser":
-    AIS_FEED_KEY = st.secrets["ais"]["key"]
+    # En Streamlit Community Cloud
+    AIS_FEED_KEY = st.secrets["ais_stream"]["key"]
 else:
-    with open("secrets/ais_stream.txt", 'r', encoding='utf-8') as f:
+    # En local
+    with open("secrets/ais_stream.txt", 'r', encoding='utf-8') as f: # Tu clave de AIS
         AIS_FEED_KEY = f.read()
-
 
 # --- Initialize session state ---
 if "ships_df" not in st.session_state:
     st.session_state.ships_df = pd.DataFrame(columns=DF_COLUMNS)
-    st.session_state.last_update = None
-<<<<<<< HEAD
 
-# Función para recibir datos AIS en un hilo aparte
-def ais_receiver():
-    """
-    Connects to the AIS stream and updates the ship data in st.session_state.
-=======
-    st.session_state.data_queue = queue.Queue()
 
-# Función para recibir datos AIS en un hilo aparte
-def ais_receiver(q: queue.Queue):
+async def fetch_and_update_dataframe():
     """
-    Connects to the AIS stream and puts the ship data into a queue.
->>>>>>> ais_stream_test
-    This function is designed to be run in a separate thread.
+    Connects to the AIS stream, fetches a single position report, and
+    updates the DataFrame in st.session_state with 10 new reports.
     """
-    async def connect_ais_stream():
-        subscribe_message = {
-            "APIKey": AIS_FEED_KEY,
-<<<<<<< HEAD
-            "BoundingBoxes": [[[7, -83], [10, -77]]], # Bounding box para Panama
-=======
-            "BoundingBoxes": [[[-90, -180], [90, 180]]],# Bounding box por defecto
-            # [[[7, -83], [10, -77]]], # Bounding box para Panama
->>>>>>> ais_stream_test
-            "FilterMessageTypes": ["PositionReport"] # Focus on position reports
-        }
+    # Usar el DataFrame del estado de la sesión para no perder datos previos
+    local_df = st.session_state.ships_df.copy()
+    if not local_df.empty:
+        local_df = local_df.set_index("mmsi")
 
-        while True:  # Bucle de reconexión
-            try:
-                async with websockets.connect("wss://stream.aisstream.io/v0/stream") as websocket:
-                    print("🔌 WebSocket connected. Sending subscription message...")
-                    await websocket.send(json.dumps(subscribe_message))
+    subscribe_message = {
+        "APIKey": AIS_FEED_KEY,
+        "BoundingBoxes": [[[-90, -180], [90, 180]]],
+        "FilterMessageTypes": ["PositionReport"]
+    }
+    
+    try:
+        async with websockets.connect("wss://stream.aisstream.io/v0/stream") as websocket:
+            st.toast("🔌 Conectando al stream de AIS...")
+            await websocket.send(json.dumps(subscribe_message))
+            
+            vessels_captured = 0
+            # Esperar hasta capturar 10 reportes de posición
+            async for message_json in websocket:
+                message = json.loads(message_json)
+                if message.get("MessageType") == "PositionReport":
+                    ais_position_message = message['Message']['PositionReport']
+                    ais_message_metadata = message['MetaData']
+
+                    ship_name = ais_message_metadata.get("ShipName", "N/A").strip()
+                    mmsi = ais_message_metadata.get("MMSI")
+
+                    # Simulación de datos de contexto
+                    ship_types = ['Cargo', 'Tanker', 'Passenger', 'Tug', 'Fishing', 'Container Ship']
+                    destinations = ['Balboa Port', 'Cristobal Port', 'Manzanillo Terminal', 'Rodman Port', 'En route']
+                    np.random.seed(mmsi % (2**32 - 1))
+                    ship_type = np.random.choice(ship_types)
+                    destination = np.random.choice(destinations)
+                    eta = datetime.now() + timedelta(hours=np.random.randint(1, 48))
+
+                    # Actualizar o añadir la fila en el DataFrame local
+                    # Usar un diccionario para asignar valores evita errores de orden de columnas
+                    local_df.loc[mmsi] = {
+                        "name": ship_name,
+                        "speed": ais_position_message.get("Sog"),
+                        "longitude": ais_position_message.get("Longitude"),
+                        "latitude": ais_position_message.get("Latitude"),
+                        "timestamp": datetime.now(),
+                        "ship_type": ship_type,
+                        "destination": destination,
+                        "eta": eta
+                    }
                     
-                    async for message_json in websocket:
-                        message = json.loads(message_json)
-                        
-                        if message.get("MessageType") == "PositionReport":
-                            ais_position_message = message['Message']['PositionReport']
-                            ais_message_metadata = message['MetaData']
+                    vessels_captured += 1
+                    st.toast(f"Buque {vessels_captured}/10: {ship_name}")
 
-                            ship_name = ais_message_metadata.get("ShipName", "N/A").strip()
-                            mmsi = ais_message_metadata.get("MMSI")
-<<<<<<< HEAD
-=======
+                    if vessels_captured >= 10:
+                        break # Salir del bucle una vez que se capturan 10
+            
+            # Actualizar el DataFrame en el estado de la sesión una sola vez al final
+            st.session_state.ships_df = local_df.reset_index()
 
-                            # --- Simulación de datos de contexto adicionales ---
-                            ship_types = ['Cargo', 'Tanker', 'Passenger', 'Tug', 'Fishing', 'Container Ship']
-                            destinations = ['Balboa Port', 'Cristobal Port', 'Manzanillo Terminal', 'Rodman Port', 'En route']
-                            
-                            # Para mantener consistencia, basamos la elección en el MMSI
-                            np.random.seed(mmsi % (2**32 - 1)) # Usar MMSI como semilla
-                            ship_type = np.random.choice(ship_types)
-                            destination = np.random.choice(destinations)
-                            
-                            # Simular un ETA entre 1 y 48 horas desde ahora
-                            eta_hours = np.random.randint(1, 48)
-                            eta = datetime.now() + timedelta(hours=eta_hours)
->>>>>>> ais_stream_test
+    except Exception as e:
+        st.error(f"❌ Error al conectar o recibir datos: {e}")
+        print(traceback.format_exc())
 
-                            new_row = pd.DataFrame([{
-                                "name"      : ship_name,
-                                "mmsi"      : mmsi,
-                                "speed"     : ais_position_message.get("Sog"),
-                                "longitude" : ais_position_message.get("Longitude"),
-                                "latitude"  : ais_position_message.get("Latitude"),
-<<<<<<< HEAD
-                                "timestamp" : ais_message_metadata.get("time_utc"),
-=======
-                                "timestamp" : datetime.now(),
-                                "ship_type" : ship_type,
-                                "destination": destination,
-                                "eta"       : eta,
->>>>>>> ais_stream_test
-                            }])
-
-                            print(f"🛳️  Position received for: {ship_name} ({mmsi})")
-
-<<<<<<< HEAD
-                            # --- Thread-safe update of the DataFrame ---
-                            # Get the current DataFrame
-                            current_df = st.session_state.ships_df
-
-                            # Remove existing entry for the ship
-                            updated_df = current_df[current_df['mmsi'] != mmsi]
-
-                            # Add the new entry
-                            updated_df = pd.concat(
-                                [updated_df, new_row],
-                                ignore_index=True
-                            )
-
-                            # Atomically update the session state
-                            st.session_state.ships_df = updated_df
-                            st.session_state.last_update = datetime.now()
-=======
-                            # Put the new data into the queue for the main thread to process
-                            q.put(new_row)
->>>>>>> ais_stream_test
-
-            except websockets.exceptions.ConnectionClosedError as e:
-                print(f"⚠️ Conexión cerrada, reintentando... ({e})")
-                await asyncio.sleep(5)  # Espera antes de reconectar
-            except Exception as e:
-                print(traceback.format_exc())
-                print(f"❌ Error inesperado en AIS: {e}")
-                await asyncio.sleep(10)  # Espera más tiempo antes de reintentar
-
-    # Create and run the event loop in the current thread
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(connect_ais_stream())
+# --- UI y Lógica Principal ---
 
 st.markdown("""
-            > ℹ️ **Esta aplicación inteligente rastrea la ubicación de buques en la zona del Canal de Panamá. 
-            Utiliza datos en tiempo real de un servicio AIS (Sistema de Identificación Automática) a través 
-            de una conexión WebSocket. La información de los barcos (nombre, velocidad, latitud y longitud) 
-            se almacena y visualiza en un mapa y en una tabla de datos interactiva.""")
+            > ℹ️ **Esta aplicación inteligente rastrea la ubicación de buques. 
+            Usa el botón para capturar un nuevo dato de posición desde la fuente en tiempo real y añadirlo a la vista.""")
 
-# Lanzar el hilo solo una vez
-if "ais_thread_started" not in st.session_state:
-    thread = threading.Thread(target=ais_receiver, args=(st.session_state.data_queue,), daemon=True)
-    thread.start()
-    st.session_state.ais_thread_started = True
-    print("🚀 AIS receiver thread started.")
+# --- UI ---
+col1, col2 = st.columns([1, 3])
+with col1:
+    if st.button("📡 Capturar Nuevo Dato de Buque", type="primary", use_container_width=True):
+        with st.spinner("Esperando un nuevo reporte de posición..."):
+            asyncio.run(fetch_and_update_dataframe())
+            st.rerun() # Forzar recarga para actualizar métricas y tabla
 
-<<<<<<< HEAD
-# --- UI Placeholders ---
-header_placeholder = st.empty()
-map_placeholder = st.empty()
-data_placeholder = st.empty()
+with col2:
+    total_ships = len(st.session_state.ships_df)
+    if total_ships > 0:
+        last_update_time = pd.to_datetime(st.session_state.ships_df['timestamp']).max()
+        m1, m2 = st.columns(2)
+        m1.metric("Buques en Vista", total_ships)
+        m2.metric("Último Dato Recibido", last_update_time.strftime("%H:%M:%S"))
 
-mostrar_sidebar_footer()
+if st.session_state.ships_df.empty:
+    st.info("📡 Presiona el botón para capturar los datos de un buque por primera vez.")
 
-# --- Auto-refreshing UI loop ---
-while True:
-    df = st.session_state.ships_df
-
-    with header_placeholder.container():
-        if st.session_state.last_update:
-            tiempo_transcurrido = datetime.now() - st.session_state.last_update
-            ultima_actualizacion_str = st.session_state.last_update.strftime("%H:%M:%S")
-            col1, col2 = st.columns(2)
-            col1.metric("Buques Rastreados", len(df))
-            col2.metric("Última Actualización", ultima_actualizacion_str, f"-{tiempo_transcurrido.seconds} s")
-        else:
-            st.info("📡 Esperando la primera señal de datos de buques...")
-
-    if not df.empty:
-        # Clean up data for display
-        df_display = df.copy()
-        df_display = df_display.dropna(subset=['latitude', 'longitude'])
-        df_display["timestamp"] = pd.to_datetime(df_display["timestamp"])
-
-        map_placeholder.map(df_display, latitude="latitude", longitude="longitude")
-
-        with data_placeholder.container():
-            st.subheader("Últimas posiciones registradas")
-            st.dataframe(
-                df_display.sort_values("timestamp", ascending=False),
-                column_config={
-                    "name": "Nombre",
-                    "mmsi": "MMSI",
-                    "latitude": "Latitud",
-                    "longitude": "Longitud",
-                    "speed": "Velocidad [nudos]",
-                    "timestamp": st.column_config.DatetimeColumn("Hora de Actualización", format="HH:mm:ss")
-                },
-                use_container_width=True,
-                hide_index=True
-            )
-
-    time.sleep(2) # Refresh interval in seconds
-=======
-# --- Procesamiento de datos y renderizado de UI ---
-# El procesamiento de la cola se ejecuta en cada recarga de la página
-# para mantener los datos subyacentes actualizados.
-def process_queue():
-    while not st.session_state.data_queue.empty(): # Vaciar la cola
-        new_row = st.session_state.data_queue.get()
-        mmsi = new_row.iloc[0]['mmsi']
-
-        current_df = st.session_state.ships_df
-
-        # Remove existing entry for the ship
-        updated_df = current_df[current_df['mmsi'] != mmsi]
-
-        # Add the new, updated entry
-        updated_df = pd.concat([updated_df, new_row], ignore_index=True)
-
-        # Atomically update the session state
-        st.session_state.ships_df = updated_df
-        st.session_state.last_update = datetime.now()
-
-process_queue()
-
-# --- UI Layout ---
-df = st.session_state.ships_df
-
-if st.session_state.last_update:
-    tiempo_transcurrido = datetime.now() - st.session_state.last_update
-    ultima_actualizacion_str = st.session_state.last_update.strftime("%H:%M:%S")
-    col1, col2, col3 = st.columns([1, 1, 2])
-    col1.metric("Buques Rastreados", len(df))
-    col2.metric("Última Actualización", ultima_actualizacion_str, f"-{tiempo_transcurrido.seconds} s")
-    with col3:
-        st.write("") # Espaciador
-        st.button("🔄 Actualizar Mapa y Datos") # Al presionar, Streamlit recarga el script
-else:
-    st.info("📡 Esperando la primera señal de datos de buques...")
-    st.button("🔄 Intentar Actualizar")
-
-if not df.empty:
-    # Clean up data for display
-    df_display = df.copy()
+# Mostrar datos si existen
+if not st.session_state.ships_df.empty:
+    df_display = st.session_state.ships_df.copy()
     df_display = df_display.dropna(subset=['latitude', 'longitude'])
-    # Convertir timestamp y eta a formato de fecha para la visualización
     df_display["timestamp"] = pd.to_datetime(df_display["timestamp"])
     df_display["eta"] = pd.to_datetime(df_display["eta"])
 
@@ -288,6 +154,3 @@ if not df.empty:
         use_container_width=True,
         hide_index=True
     )
-
-mostrar_sidebar_footer()
->>>>>>> ais_stream_test
