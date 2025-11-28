@@ -28,14 +28,14 @@ if not session_id:
 
 
 st.set_page_config(
-    page_title="Chat con Asistente Inmobiliario",
+    page_title="Chat con Asistente",
     page_icon="QuAI",
     layout="wide", # "wide" para más espacio, "centered" para un look más compacto
     initial_sidebar_state="expanded"
 )
 
-st.set_page_config(page_title="Chatbot Inmobiliario", page_icon="🤖", layout="wide")
-st.title("🤖 Chat con Asistente Inmobiliario")
+st.set_page_config(page_title="Chatbot", page_icon="🤖", layout="wide")
+st.title("🤖 Chat con Asistente")
 
 
 mostrar_sidebar_footer()
